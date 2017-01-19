@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -130,6 +131,153 @@ namespace Shamrock.Models
 					return;
 
 				result = true;
+			});
+
+			return result;
+		}
+
+		public static async Task<List<MacOSDisk>> ListDisksAsync()
+		{
+			var result = new List<MacOSDisk>();
+
+			await Task.Run(() =>
+			{
+				ProcessStarter p = new ProcessStarter("/usr/sbin/diskutil", $"list");
+				p.Start();
+
+				if (p.Error.Trim() != string.Empty)
+					return;
+
+				string output = p.Output;
+				string[] lines = output.Split('\n');
+
+				bool isNewDisk = false;
+				string identifier = string.Empty;
+				PartitionScheme scheme;
+				int size = 0;
+				DiskSizeUnit unit = DiskSizeUnit.GB;
+				MacOSDiskType type = MacOSDiskType.Internal;
+
+				foreach (string line in lines)
+				{
+					if (line.Contains("/dev/"))
+					{
+						isNewDisk = true;
+
+						if (line.Contains("internal, physical"))
+							type = MacOSDiskType.Internal;
+						else
+							type = MacOSDiskType.Virtual;
+						
+						continue;
+					}
+
+					if (isNewDisk)
+					{
+						if (line.Contains("0:"))
+						{
+							var info = line.Split(' ');
+							List<string> tempInfo = new List<string>();
+
+							foreach (string i in info) if (i.Trim() != string.Empty) tempInfo.Add(i);
+							info = tempInfo.ToArray();
+
+							switch (info[1].Trim())
+							{
+								case "GUID_partition_scheme":
+									scheme = PartitionScheme.GPT;
+									break;
+								//@todo add APM and MBR support
+								default:
+									scheme = PartitionScheme.APM;
+									break;
+							}
+
+							size = (int)double.Parse(info[2].Replace("*", string.Empty));
+							switch (info[3])
+							{
+								case "GB":
+									unit = DiskSizeUnit.GB;
+									break;
+								case "MB":
+									unit = DiskSizeUnit.MB;
+									break;
+								case "KB":
+									unit = DiskSizeUnit.KB;
+									break;
+							}
+
+							identifier = info[4].Trim();
+
+							result.Add(new MacOSDisk()
+							{
+								Identifier = identifier,
+								Partitions = new List<MacOSPartition>(),
+								Scheme = scheme,
+								Size = size,
+								SizeUnit = unit,
+								Type = type
+							});
+							isNewDisk = false;
+						}
+					}
+					else if (line.Trim() == string.Empty)
+					{
+						continue;
+					}
+					else
+					{
+						var lastDisk = result[result.Count - 1];
+						MacOSPartition partition = new MacOSPartition(lastDisk);
+						var info = line.Split(' ');
+
+						List<string> tempInfo = new List<string>();
+
+						foreach (string i in info) if (i.Trim() != string.Empty) tempInfo.Add(i);
+						info = tempInfo.ToArray();
+
+						partition.Identifier = info[info.Length - 1];
+						partition.PartitionName = info[2];
+
+						double psize = 0;
+						int x = 0;
+						while (!double.TryParse(info[3 + x], out psize)){
+							partition.PartitionName += $" {info[3 + x]}";
+							x++;
+						}
+
+						switch (info[1].Trim())
+						{
+							case "EFI":
+								partition.Type = PartitionType.EFI;
+								break;
+							case "Apple_HFS":
+								partition.Type = PartitionType.Apple_HFS;
+								break;
+							case "Apple_Boot":
+								partition.Type = PartitionType.Apple_Boot;
+								break;
+						}
+
+						partition.Size = (int)psize;
+						switch (info[info.Length - 2])
+						{
+							case "GB":
+								partition.SizeUnit = DiskSizeUnit.GB;
+								break;
+							case "MB":
+								partition.SizeUnit = DiskSizeUnit.MB;
+								break;
+							case "KB":
+								partition.SizeUnit = DiskSizeUnit.KB;
+								break;
+						}
+
+						lastDisk.Partitions.Add(partition);
+					}
+
+				}
+
 			});
 
 			return result;

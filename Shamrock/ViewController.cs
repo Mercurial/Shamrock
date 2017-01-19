@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -13,6 +14,8 @@ namespace Shamrock
 	public partial class ViewController : NSViewController
 	{
 		private string _status = string.Empty;
+		private List<MacOSDisk> disks = new List<MacOSDisk>();
+
 		public string Status
 		{
 			private set
@@ -27,7 +30,7 @@ namespace Shamrock
 		{
 		}
 
-		public override void ViewDidLoad()
+		public async override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
 			// Do any additional setup after loading the view.
@@ -35,6 +38,22 @@ namespace Shamrock
 			//Init Controls
 			imgLogo.Image = new NSImage("logo.png", true);
 			txtDiskName.Enabled = false;
+
+			disks = await MacOSDiskHelper.ListDisksAsync();
+			disks.Reverse();
+			cmbDisk.RemoveAll();
+
+			foreach (MacOSDisk disk in disks)
+			{
+				foreach (MacOSPartition partition in disk.Partitions)
+				{
+					if (partition.Type == PartitionType.Apple_HFS)
+					{
+						cmbDisk.Add(new NSString(partition.PartitionName));
+					}
+				}
+			}
+
 		}
 
 		partial void btnBrowseAppFile_Clicked(NSObject sender)

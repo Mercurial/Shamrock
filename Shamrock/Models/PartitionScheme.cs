@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Shamrock
+namespace Shamrock.Models
 {
 	public sealed class PartitionScheme
 	{

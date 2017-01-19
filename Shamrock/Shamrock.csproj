@@ -70,6 +70,10 @@
     <Folder Include="Models\" />
     <Folder Include="Resources\CLOVER\" />
     <Folder Include="Resources\CLOVER\3911\" />
+    <Folder Include="Resources\CLOVER\3911\EFI\CLOVER\ROM\" />
+    <Folder Include="Resources\CLOVER\3911\EFI\CLOVER\misc\" />
+    <Folder Include="Resources\CLOVER\3911\EFI\CLOVER\kexts\" />
+    <Folder Include="Resources\CLOVER\3911\EFI\CLOVER\kexts\others\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
@@ -88,6 +92,10 @@
     <Compile Include="Models\DiskFileSystem.cs" />
     <Compile Include="Models\ProcessStarter.cs" />
     <Compile Include="Models\PartitionScheme.cs" />
+    <Compile Include="Models\MacOSDisk.cs" />
+    <Compile Include="Models\MacOSDiskType.cs" />
+    <Compile Include="Models\MacOSPartition.cs" />
+    <Compile Include="Models\PartitionType.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Main.storyboard" />
@@ -202,6 +210,19 @@
     <BundleResource Include="Resources\CLOVER\3911\EFI\CLOVER\tools\Shell64.efi" />
     <BundleResource Include="Resources\CLOVER\3911\EFI\CLOVER\tools\Shell64U.efi" />
     <BundleResource Include="Resources\CLOVER\3911\EFI\CLOVER\tools\bdmesg.efi" />
+    <BundleResource Include="Resources\CLOVER\3911\EFI\CLOVER\kexts\others\AtherosE2200Ethernet.kext\Contents\Info.plist" />
+    <BundleResource Include="Resources\CLOVER\3911\EFI\CLOVER\kexts\others\AtherosE2200Ethernet.kext\Contents\MacOS\AtherosE2200Ethernet" />
+    <BundleResource Include="Resources\CLOVER\3911\EFI\CLOVER\kexts\others\AtherosE2200Ethernet.kext\Contents\Resources\en.lproj\InfoPlist.strings" />
+    <BundleResource Include="Resources\CLOVER\3911\EFI\CLOVER\kexts\others\FakeSMC.kext\Contents\Info.plist" />
+    <BundleResource Include="Resources\CLOVER\3911\EFI\CLOVER\kexts\others\FakeSMC.kext\Contents\MacOS\FakeSMC" />
+    <BundleResource Include="Resources\CLOVER\3911\EFI\CLOVER\kexts\others\GenericUSBXHCI.kext\Contents\Info.plist" />
+    <BundleResource Include="Resources\CLOVER\3911\EFI\CLOVER\kexts\others\GenericUSBXHCI.kext\Contents\MacOS\GenericUSBXHCI" />
+    <BundleResource Include="Resources\CLOVER\3911\EFI\CLOVER\kexts\others\IntelMausiEthernet.kext\Contents\Info.plist" />
+    <BundleResource Include="Resources\CLOVER\3911\EFI\CLOVER\kexts\others\IntelMausiEthernet.kext\Contents\MacOS\IntelMausiEthernet" />
+    <BundleResource Include="Resources\CLOVER\3911\EFI\CLOVER\kexts\others\RealtekRTL8111.kext\Contents\Info.plist" />
+    <BundleResource Include="Resources\CLOVER\3911\EFI\CLOVER\kexts\others\RealtekRTL8111.kext\Contents\MacOS\RealtekRTL8111" />
+    <BundleResource Include="Resources\CLOVER\3911\EFI\CLOVER\kexts\others\USBInjectAll.kext\Contents\Info.plist" />
+    <BundleResource Include="Resources\CLOVER\3911\EFI\CLOVER\kexts\others\USBInjectAll.kext\Contents\MacOS\USBInjectAll" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>
