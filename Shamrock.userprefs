@@ -1,9 +1,8 @@
 ﻿<Properties StartupConfiguration="{64C3A578-3CD6-4C32-9133-FDDA9EAB1E97}|Default">
   <MonoDevelop.Ide.ItemProperties.Shamrock PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Shamrock Status">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Shamrock/ViewController.cs">
     <Files>
       <File FileName="Shamrock/ViewController.cs" Line="244" Column="31" />
-      <File FileName="Shamrock Status" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Release|x86" />
