@@ -1,3 +1,0 @@
-#!/bin/sh
-/usr/bin/touch "%resourceFolder%/cim_started"
-"%appDir%/Contents/Resources/createinstallmedia" --applicationpath "%appDir%" --volume "%volumePath%" --no interaction && /usr/bin/touch "%resourceFolder%/cim_done"
