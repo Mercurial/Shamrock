@@ -1,0 +1,23 @@
+# Version: 3.0.0.290 (master: 62816dd)
+# [first argument, ignore] # /Library/Frameworks/Xamarin.Mac.framework/Versions/3.0.0.290/lib/mmp/mmp.exe
+/Library/Frameworks/Xamarin.Mac.framework/Versions/3.0.0.290/lib/mmp/mmp.exe \
+	/verbose \
+	/debug \
+	/output:/Volumes/Files/Projects/Shamrock/Shamrock/bin/Debug/ \
+	/name:Shamrock \
+	/profile:Xamarin.Mac \
+	/arch:x86_64 \
+	--http-message-handler=HttpClientHandler \
+	/minos=10.9 \
+	--tls-provider=default \
+	/profiling \
+	/nolink \
+	/assembly:/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/mono/Xamarin.Mac/System.dll \
+	/assembly:/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/mono/Xamarin.Mac/System.Core.dll \
+	/assembly:/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/mono/Xamarin.Mac/Xamarin.Mac.dll \
+	/assembly:/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/mono/Xamarin.Mac/mscorlib.dll \
+	/Volumes/Files/Projects/Shamrock/Shamrock/bin/Debug/Shamrock.exe \
+	/sdkroot \
+	/Applications/Xcode.app/Contents/Developer \
+	--cache \
+	/Volumes/Files/Projects/Shamrock/Shamrock/obj/x86/Debug/mmp-cache \
