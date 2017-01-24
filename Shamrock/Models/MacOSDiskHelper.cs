@@ -283,6 +283,22 @@ namespace Shamrock.Models
 			return result;
 		}
 
+
+		public static async Task<bool> MountVolumeAsync(string volumeIdent)
+		{
+			bool result = false;
+			ProcessStarter p = new ProcessStarter("/usr/sbin/diskutil", $"mount {volumeIdent}");
+			p.Start();
+
+			if (p.Error.Trim() != string.Empty)
+				return false;
+
+			string output = p.Output;
+
+			return output.Contains("mounted");
+		}
+
+
 	}
 
 
@@ -291,14 +307,21 @@ namespace Shamrock.Models
 		public bool AttachSuccess { get; set; }
 		public string DiskName { get; set; }
 		public string VolumeName { get; set; }
-		public string VolumeDisk { get; set; }
+		public string VolumeIdentifier { get; set; }
 
-		public AttachVirtualDiskImageResult(bool success, string diskName, string volumeName, string volumeDisk )
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:Shamrock.Models.AttachVirtualDiskImageResult"/> class.
+		/// </summary>
+		/// <param name="success">If set to <c>true</c> success.</param>
+		/// <param name="diskName">Disk name.</param>
+		/// <param name="volumeName">Volume name.</param>
+		/// <param name="volumeIdent">Volume Identifier.</param>
+		public AttachVirtualDiskImageResult(bool success, string diskName, string volumeName, string volumeIdent )
 		{
 			this.AttachSuccess = success;
 			this.DiskName = diskName;
 			this.VolumeName = volumeName;
-			this.VolumeDisk = volumeDisk;
+			this.VolumeIdentifier = volumeIdent;
 		}
 	}
 

@@ -1,4 +1,4 @@
-﻿// WARNING
+// WARNING
 //
 // This file has been generated automatically by Visual Studio to store outlets and
 // actions made in the UI designer. If it is removed, they will be lost.
@@ -28,6 +28,9 @@ namespace Shamrock
 		AppKit.NSImageView imgLogo { get; set; }
 
 		[Outlet]
+		AppKit.NSProgressIndicator pbInstall { get; set; }
+
+		[Outlet]
 		AppKit.NSButton rbMethodNew { get; set; }
 
 		[Outlet]
@@ -44,6 +47,9 @@ namespace Shamrock
 
 		[Action ("btnCreateInstaller_Clicked:")]
 		partial void btnCreateInstaller_Clicked (Foundation.NSObject sender);
+
+		[Action ("BtnRefresh_Clicked:")]
+		partial void BtnRefresh_Clicked (Foundation.NSObject sender);
 
 		[Action ("chkCreateDMG_Changed:")]
 		partial void chkCreateDMG_Changed (Foundation.NSObject sender);
@@ -81,6 +87,16 @@ namespace Shamrock
 				imgLogo = null;
 			}
 
+			if (rbMethodNew != null) {
+				rbMethodNew.Dispose ();
+				rbMethodNew = null;
+			}
+
+			if (rbMethodOld != null) {
+				rbMethodOld.Dispose ();
+				rbMethodOld = null;
+			}
+
 			if (txtAppFile != null) {
 				txtAppFile.Dispose ();
 				txtAppFile = null;
@@ -91,14 +107,9 @@ namespace Shamrock
 				txtDiskName = null;
 			}
 
-			if (rbMethodOld != null) {
-				rbMethodOld.Dispose ();
-				rbMethodOld = null;
-			}
-
-			if (rbMethodNew != null) {
-				rbMethodNew.Dispose ();
-				rbMethodNew = null;
+			if (pbInstall != null) {
+				pbInstall.Dispose ();
+				pbInstall = null;
 			}
 		}
 	}

@@ -1,25 +1,21 @@
 ﻿<Properties StartupConfiguration="{64C3A578-3CD6-4C32-9133-FDDA9EAB1E97}|Default">
   <MonoDevelop.Ide.ItemProperties.Shamrock PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Shamrock/Models/MacOSDiskHelper.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Shamrock/ViewController.cs">
     <Files>
-      <File FileName="Shamrock/ViewController.cs" Line="42" Column="1" />
-      <File FileName="Shamrock/Models/MacOSDiskHelper.cs" Line="191" Column="34" />
+      <File FileName="Shamrock/ViewController.cs" Line="224" Column="26" />
+      <File FileName="Shamrock/Models/MacOSDiskHelper.cs" Line="287" Column="50" />
       <File FileName="Shamrock/Models/MacOSDisk.cs" Line="13" Column="55" />
       <File FileName="Shamrock/Models/MacOSDiskType.cs" Line="22" Column="3" />
       <File FileName="Shamrock/Models/PartitionScheme.cs" Line="2" Column="26" />
       <File FileName="Shamrock/Models/DiskSizeUnit.cs" Line="5" Column="34" />
       <File FileName="Shamrock/Models/MacOSPartition.cs" Line="11" Column="42" />
       <File FileName="Shamrock/Models/PartitionType.cs" Line="11" Column="50" />
-      <File FileName="Shamrock/Resources/CLOVER/3911/EFI/CLOVER/config.plist" />
       <File FileName="Shamrock/Main.cs" Line="10" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore>
-      <Breakpoint file="/Volumes/Files/Projects/Shamrock/Shamrock/Models/MacOSDiskHelper.cs" relfile="Shamrock/Models/MacOSDiskHelper.cs" line="221" column="18" />
-      <Breakpoint file="/Volumes/Files/Projects/Shamrock/Shamrock/Models/MacOSDiskHelper.cs" relfile="Shamrock/Models/MacOSDiskHelper.cs" line="179" column="22" />
-    </BreakpointStore>
+    <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MultiItemStartupConfigurations />

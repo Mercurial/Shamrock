@@ -39,8 +39,19 @@ namespace Shamrock
 			imgLogo.Image = new NSImage("logo.png", true);
 			txtDiskName.Enabled = false;
 
+			await RefreshDisksList();
+			//await MacOSDiskHelper.MountVolumeAsync("/dev/disk2s1");
+			pbInstall.Hidden = true;
+		}
+
+		async partial void BtnRefresh_Clicked(NSObject sender)
+		{
+			await RefreshDisksList();
+		}
+
+		async Task RefreshDisksList()
+		{
 			disks = await MacOSDiskHelper.ListDisksAsync();
-			disks.Reverse();
 			cmbDisk.RemoveAll();
 
 			foreach (MacOSDisk disk in disks)
@@ -50,10 +61,10 @@ namespace Shamrock
 					if (partition.Type == PartitionType.Apple_HFS)
 					{
 						cmbDisk.Add(new NSString(partition.PartitionName));
+						cmbDisk.StringValue = partition.PartitionName;
 					}
 				}
 			}
-
 		}
 
 		partial void btnBrowseAppFile_Clicked(NSObject sender)
@@ -61,7 +72,7 @@ namespace Shamrock
 			var dlg = NSOpenPanel.OpenPanel;
 			dlg.CanChooseFiles = true;
 			dlg.CanChooseDirectories = false;
-			dlg.AllowedFileTypes = new string[] { "app"};
+			dlg.AllowedFileTypes = new string[] { "app" };
 
 			if (dlg.RunModal() == 1)
 			{
@@ -98,6 +109,8 @@ namespace Shamrock
 
 		async partial void btnCreateInstaller_Clicked(NSObject sender)
 		{
+			pbInstall.Hidden = false;
+			pbInstall.StartAnimation(sender);
 			btnCreateInstaller.Enabled = false;
 			MacOSAppFile AppFile = new MacOSAppFile(txtAppFile.StringValue);
 
@@ -109,6 +122,9 @@ namespace Shamrock
 			AttachVirtualDiskImageResult usbAttachResult = new AttachVirtualDiskImageResult(false, null, null, null);
 
 			bool Aborted = false;
+
+			MacOSDisk currentDisk;
+			string EFI_Ident = String.Empty;
 
 			//Check if Installer is a valid installer.app file
 			if (!AppFile.IsValid)
@@ -147,9 +163,27 @@ namespace Shamrock
 				this.Status = "Attaching Virtual Disk Image...";
 				usbAttachResult = await MacOSDiskHelper.AttachVirtualDiskImageAsync(path);
 			}
+			else
+			{
+				foreach (MacOSDisk disk in disks)
+				{
+					foreach (MacOSPartition part in disk.Partitions)
+					{
+						if (part.PartitionName == cmbDisk.StringValue)
+						{
+							VolumeDiskName = cmbDisk.StringValue;
+							usbAttachResult = new AttachVirtualDiskImageResult(true, $"/dev/{disk.Identifier}", VolumeDiskName , $"/dev/{part.Identifier}");
+							currentDisk = disk;
+						}
+
+						if (part.Type == PartitionType.EFI)
+							EFI_Ident = part.Identifier;
+					}
+				}
+			}
 
 
-			this.Status = "Format Disk Image...";
+			this.Status = "Formatting Disk Image...";
 			await MacOSDiskHelper.EraseDiskAsync(usbAttachResult.DiskName, VolumeDiskName, PartitionScheme.GPT, DiskFileSystem.JHFSPlus);
 			usbAttachResult.VolumeName = $"/Volumes/{VolumeDiskName}";
 
@@ -200,7 +234,7 @@ namespace Shamrock
 
 				});
 
-				await MacOSDiskHelper.RenameVolumeAsync(usbAttachResult.VolumeDisk, VolumeDiskName);
+				await MacOSDiskHelper.RenameVolumeAsync(usbAttachResult.VolumeIdentifier, VolumeDiskName);
 			}
 			else
 			{
@@ -212,14 +246,14 @@ namespace Shamrock
 
 				await MacOSDiskHelper.RestoreDiskAsync(attachBaseResult.VolumeName, usbAttachResult.VolumeName);
 
-				await MacOSDiskHelper.RenameVolumeAsync(usbAttachResult.VolumeDisk, VolumeDiskName);
+				await MacOSDiskHelper.RenameVolumeAsync(usbAttachResult.VolumeIdentifier, VolumeDiskName);
 				this.Status = "Unmounting BaseSystem...";
 				await MacOSDiskHelper.UnmountVolumeAsync(attachBaseResult.VolumeName);
 				this.Status = "Copying Installer Packages folder";
 				await Task.Run(() =>
 				{
 					if (File.Exists($"{usbAttachResult.VolumeName}/System/Installation/Packages"))
-						File.Delete($"{usbAttachResult.VolumeName}/System/Installation/Packages");
+						File.Delete($"{usbAttachResult.VolumeName}/System/Installation/PackaZZZges");
 					//Use OS cp tool instead of C#, less cores and probably much faster
 					ProcessStarter p = new ProcessStarter("/bin/cp", $"-R -p \"{attachESDResult.VolumeName}/Packages\" \"{usbAttachResult.VolumeName}/System/Installation/Packages\"");
 					p.Start();
@@ -230,17 +264,39 @@ namespace Shamrock
 					ProcessStarter p = new ProcessStarter("/bin/cp", $"-R -p \"{attachESDResult.VolumeName}/BaseSystem.chunklist\" \"{usbAttachResult.VolumeName}/BaseSystem.chunklist\"");
 					p.Start();
 				});
-				this.Status = "Copying BaseSystem.dmg";
-				await Task.Run(() =>
-				{
-					ProcessStarter p = new ProcessStarter("/bin/cp", $"-R -p \"{attachESDResult.VolumeName}/BaseSystem.dmg\" \"{usbAttachResult.VolumeName}/BaseSystem.dmg\"");
-					p.Start();
-				});
 				this.Status = "Unmounting InstallESD";
 				await MacOSDiskHelper.UnmountVolumeAsync(attachESDResult.VolumeName);
 			}
 
+
+			if (!Aborted)
+			{
+				var tDisks = await MacOSDiskHelper.ListDisksAsync();
+				foreach (MacOSDisk disk in tDisks)
+				{
+					foreach (MacOSPartition part in disk.Partitions)
+					{
+						if (part.Type == PartitionType.EFI)
+							await MacOSDiskHelper.UnmountVolumeAsync($"/dev/{part.Identifier}");
+					}
+				}
+
+				this.Status = "Mounting EFI Partition";
+				await MacOSDiskHelper.MountVolumeAsync(EFI_Ident);
+
+
+				this.Status = "Copying CLOVER to EFI Partition";
+				await Task.Run(() =>
+				{
+					ProcessStarter p = new ProcessStarter("/bin/cp", $"-R -p \"{Environment.CurrentDirectory}/CLOVER/3911/EFI\" \"/Volumes/EFI/\"");
+					p.Start();
+				});
+			}
+		
+
 			EnableCreateButton();
+			pbInstall.Hidden = true;
+			pbInstall.StopAnimation(sender);
 
 			if (Aborted)
 			{
