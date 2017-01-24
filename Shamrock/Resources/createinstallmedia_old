@@ -1,0 +1,3 @@
+#!/bin/sh
+/usr/bin/touch "%resourceFolder%/cim_started"
+/usr/sbin/asr restore -source "%source%" -target "%target%" -erase -noprompt && /usr/bin/touch "%resourceFolder%/cim_done"

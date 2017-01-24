@@ -2,8 +2,8 @@
   <MonoDevelop.Ide.ItemProperties.Shamrock PreferredExecutionTarget="MonoDevelop.Default" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Shamrock/ViewController.cs">
     <Files>
-      <File FileName="Shamrock/ViewController.cs" Line="224" Column="26" />
-      <File FileName="Shamrock/Models/MacOSDiskHelper.cs" Line="287" Column="50" />
+      <File FileName="Shamrock/ViewController.cs" Line="310" Column="46" />
+      <File FileName="Shamrock/Models/MacOSDiskHelper.cs" Line="114" Column="19" />
       <File FileName="Shamrock/Models/MacOSDisk.cs" Line="13" Column="55" />
       <File FileName="Shamrock/Models/MacOSDiskType.cs" Line="22" Column="3" />
       <File FileName="Shamrock/Models/PartitionScheme.cs" Line="2" Column="26" />
@@ -11,11 +11,17 @@
       <File FileName="Shamrock/Models/MacOSPartition.cs" Line="11" Column="42" />
       <File FileName="Shamrock/Models/PartitionType.cs" Line="11" Column="50" />
       <File FileName="Shamrock/Main.cs" Line="10" Column="1" />
+      <File FileName="Shamrock/AppDelegate.cs" Line="10" Column="4" />
+      <File FileName="Shamrock/Resources/createinstallmedia_old" Line="3" Column="98" />
+      <File FileName="Shamrock/Resources/createinstallmedia" Line="3" Column="165" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
+    <BreakpointStore>
+      <Breakpoint file="/Volumes/Files/Projects/Shamrock/Shamrock/ViewController.cs" relfile="Shamrock/ViewController.cs" line="190" column="49" />
+      <Breakpoint file="/Volumes/Files/Projects/Shamrock/Shamrock/ViewController.cs" relfile="Shamrock/ViewController.cs" line="249" column="33" />
+    </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MultiItemStartupConfigurations />

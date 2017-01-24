@@ -244,7 +244,60 @@ namespace Shamrock
 				var attachBaseResult = await MacOSDiskHelper.AttachVirtualDiskImageAsync($"{attachESDResult.VolumeName}/BaseSystem.dmg");
 				this.Status = "Restoring BaseSystem to USB...";
 
-				await MacOSDiskHelper.RestoreDiskAsync(attachBaseResult.VolumeName, usbAttachResult.VolumeName);
+				await Task.Run(() =>
+				{
+					var defaults = AuthorizationFlags.Defaults;
+
+					using (var auth = Authorization.Create(defaults))
+					{
+						//var args = new[] { "-c", $"\"\"\"/Applications/Install macOS Sierra.app/Contents/Resources/createinstallmedia\" --applicationpath \"{AppFile.Path}\" --volume \"{usbAttachResult.VolumeName}\" --no interaction\"\"" };
+						if (File.Exists($"{Environment.CurrentDirectory}/createinstallmedia_old_temp"))
+							File.Delete($"{Environment.CurrentDirectory}/createinstallmedia_old_temp");
+
+						if (File.Exists($"{Environment.CurrentDirectory}/cim_done"))
+							File.Delete($"{Environment.CurrentDirectory}/cim_done");
+
+						if (File.Exists($"{Environment.CurrentDirectory}/cim_started"))
+							File.Delete($"{Environment.CurrentDirectory}/cim_started");
+
+						string script = File.ReadAllText($"{Environment.CurrentDirectory}/createinstallmedia_old");
+
+						script = script.Replace("%resourceFolder%", Environment.CurrentDirectory);
+						script = script.Replace("%source%", attachBaseResult.VolumeName);
+						script = script.Replace("%target%", usbAttachResult.VolumeName);
+
+						File.WriteAllText($"{Environment.CurrentDirectory}/createinstallmedia_old_temp", script, new UTF8Encoding(false));
+
+						ProcessStarter p = new ProcessStarter("/bin/chmod", $"755 createinstallmedia_old_temp");
+						p.Start();
+
+						var args = new[] { "-c", $"\"\"{Environment.CurrentDirectory}/createinstallmedia_old_temp\"\"" };
+						auth.ExecuteWithPrivileges("/bin/sh", defaults, args);
+
+						Thread.Sleep(5000);
+
+						Aborted = !File.Exists($"{Environment.CurrentDirectory}/cim_started");
+
+						while (!Aborted && !File.Exists($"{Environment.CurrentDirectory}/cim_done"))
+						{
+							Thread.Sleep(1000);
+						}
+
+					}
+
+					//var defaults = AuthorizationFlags.Defaults;
+
+					//using (var auth = Authorization.Create(defaults))
+					//{
+
+					//	//await MacOSDiskHelper.RestoreDiskAsync(attachBaseResult.VolumeName, usbAttachResult.VolumeName);
+
+					//	var args = new[] { "-c", $"\"\"/usr/sbin/asr -source \"{attachBaseResult.VolumeName}\" -target \"{usbAttachResult.VolumeName}\" -erase -noprompt\"\"" };
+					//	auth.ExecuteWithPrivileges("/bin/sh", defaults, args);
+
+					//}
+
+				});
 
 				await MacOSDiskHelper.RenameVolumeAsync(usbAttachResult.VolumeIdentifier, VolumeDiskName);
 				this.Status = "Unmounting BaseSystem...";
@@ -253,8 +306,8 @@ namespace Shamrock
 				await Task.Run(() =>
 				{
 					if (File.Exists($"{usbAttachResult.VolumeName}/System/Installation/Packages"))
-						File.Delete($"{usbAttachResult.VolumeName}/System/Installation/PackaZZZges");
-					//Use OS cp tool instead of C#, less cores and probably much faster
+						File.Delete($"{usbAttachResult.VolumeName}/System/Installation/Packages");
+					//Use OS cp tool instead of C#, less codes and probably much faster
 					ProcessStarter p = new ProcessStarter("/bin/cp", $"-R -p \"{attachESDResult.VolumeName}/Packages\" \"{usbAttachResult.VolumeName}/System/Installation/Packages\"");
 					p.Start();
 				});

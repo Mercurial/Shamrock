@@ -221,6 +221,7 @@
     <BundleResource Include="Resources\CLOVER\3911\EFI\CLOVER\tools\Shell64.efi" />
     <BundleResource Include="Resources\CLOVER\3911\EFI\CLOVER\tools\Shell64U.efi" />
     <BundleResource Include="Resources\CLOVER\3911\EFI\CLOVER\tools\bdmesg.efi" />
+    <BundleResource Include="Resources\createinstallmedia_old" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>
