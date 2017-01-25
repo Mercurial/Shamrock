@@ -149,7 +149,7 @@ namespace Shamrock.Models
 					return;
 
 				string output = p.Output;
-				//string output = File.ReadAllText($"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}/diskutil2.txt");
+				output = File.ReadAllText($"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}/diskutil2.txt");
 				string[] lines = output.Split('\n');
 
 				bool isNewDisk = false;

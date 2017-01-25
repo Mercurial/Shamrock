@@ -1,4 +1,6 @@
-﻿using AppKit;
+﻿using System;
+using System.IO;
+using AppKit;
 
 namespace Shamrock
 {
@@ -6,8 +8,21 @@ namespace Shamrock
 	{
 		static void Main(string[] args)
 		{
-			NSApplication.Init();
-			NSApplication.Main(args);
+			try
+			{
+				NSApplication.Init();
+				NSApplication.Main(args);
+			}
+			catch(Exception ex)
+			{
+				FileStream fs = File.Open($"{Environment.CurrentDirectory}/error.log", FileMode.Append);
+				StreamWriter writer = new StreamWriter(fs);
+				writer.WriteLineAsync($"======= Error - {DateTime.Now.ToString()} =======");
+				writer.WriteLineAsync(ex.Message);
+				writer.WriteLineAsync($"================= Stack Trace ===================");
+				writer.WriteLineAsync(ex.StackTrace);
+				writer.WriteLineAsync($"=================================================");
+			}
 		}
 	}
 }
