@@ -142,13 +142,14 @@ namespace Shamrock.Models
 
 			await Task.Run(() =>
 			{
-				ProcessStarter p = new ProcessStarter("/usr/sbin/diskutil", $"list");
-				p.Start();
+				//ProcessStarter p = new ProcessStarter("/usr/sbin/diskutil", $"list");
+				//p.Start();
 
-				if (p.Error.Trim() != string.Empty)
-					return;
+				//if (p.Error.Trim() != string.Empty)
+				//	return;
 
-				string output = p.Output;
+				//string output = p.Output;
+				string output = File.ReadAllText($"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}/diskutil2.txt");
 				string[] lines = output.Split('\n');
 
 				bool isNewDisk = false;
@@ -193,8 +194,8 @@ namespace Shamrock.Models
 									break;
 							}
 
-							size = (int)double.Parse(info[2].Replace("*", string.Empty));
-							switch (info[3])
+							size = (int)double.Parse(info[info.Length - 3].Replace("*", string.Empty).Replace("+", ""));
+							switch (info[info.Length - 2])
 							{
 								case "GB":
 									unit = DiskSizeUnit.GB;
@@ -207,7 +208,7 @@ namespace Shamrock.Models
 									break;
 							}
 
-							identifier = info[4].Trim();
+							identifier = info[info.Length - 1].Trim();
 
 							result.Add(new MacOSDisk()
 							{
@@ -227,55 +228,65 @@ namespace Shamrock.Models
 					}
 					else
 					{
-						var lastDisk = result[result.Count - 1];
-						MacOSPartition partition = new MacOSPartition(lastDisk);
-						var info = line.Split(' ');
-
-						List<string> tempInfo = new List<string>();
-
-						foreach (string i in info) if (i.Trim() != string.Empty) tempInfo.Add(i);
-						info = tempInfo.ToArray();
-
-						partition.Identifier = info[info.Length - 1];
-						partition.PartitionName = info[2];
-
-						double psize = 0;
-						int x = 0;
-						while (!double.TryParse(info[3 + x], out psize)){
-							partition.PartitionName += $" {info[3 + x]}";
-							x++;
-						}
-
-						switch (info[1].Trim())
+						try
 						{
-							case "EFI":
-								partition.Type = PartitionType.EFI;
-								break;
-							case "Apple_HFS":
-								partition.Type = PartitionType.Apple_HFS;
-								break;
-							case "Apple_Boot":
-								partition.Type = PartitionType.Apple_Boot;
-								break;
-						}
+							var lastDisk = result[result.Count - 1];
+							MacOSPartition partition = new MacOSPartition(lastDisk);
+							var info = line.Split(' ');
 
-						partition.Size = (int)psize;
-						switch (info[info.Length - 2])
+							List<string> tempInfo = new List<string>();
+
+							foreach (string i in info) if (i.Trim() != string.Empty) tempInfo.Add(i);
+							info = tempInfo.ToArray();
+
+							partition.Identifier = info[info.Length - 1];
+							partition.PartitionName = info[2];
+
+							double psize = 0;
+							int x = 0;
+							while (!double.TryParse(info[3 + x], out psize))
+							{
+								partition.PartitionName += $" {info[3 + x]}";
+								x++;
+							}
+
+							switch (info[1].Trim())
+							{
+								case "EFI":
+									partition.Type = PartitionType.EFI;
+									break;
+								case "Apple_HFS":
+									partition.Type = PartitionType.Apple_HFS;
+									break;
+								// Too Lazy to handle all types of partition for now :D
+								default:
+									partition.Type = PartitionType.None;
+									break;
+							}
+
+							partition.Size = (int)psize;
+							switch (info[info.Length - 2])
+							{
+								case "GB":
+									partition.SizeUnit = DiskSizeUnit.GB;
+									break;
+								case "MB":
+									partition.SizeUnit = DiskSizeUnit.MB;
+									break;
+								case "KB":
+									partition.SizeUnit = DiskSizeUnit.KB;
+									break;
+							}
+
+							lastDisk.Partitions.Add(partition);
+
+						}
+						catch(Exception ex)
 						{
-							case "GB":
-								partition.SizeUnit = DiskSizeUnit.GB;
-								break;
-							case "MB":
-								partition.SizeUnit = DiskSizeUnit.MB;
-								break;
-							case "KB":
-								partition.SizeUnit = DiskSizeUnit.KB;
-								break;
+							continue;
 						}
 
-						lastDisk.Partitions.Add(partition);
 					}
-
 				}
 
 			});
