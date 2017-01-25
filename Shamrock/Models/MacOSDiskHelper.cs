@@ -142,14 +142,14 @@ namespace Shamrock.Models
 
 			await Task.Run(() =>
 			{
-				//ProcessStarter p = new ProcessStarter("/usr/sbin/diskutil", $"list");
-				//p.Start();
+				ProcessStarter p = new ProcessStarter("/usr/sbin/diskutil", $"list");
+				p.Start();
 
-				//if (p.Error.Trim() != string.Empty)
-				//	return;
+				if (p.Error.Trim() != string.Empty)
+					return;
 
-				//string output = p.Output;
-				string output = File.ReadAllText($"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}/diskutil2.txt");
+				string output = p.Output;
+				//string output = File.ReadAllText($"{Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}/diskutil2.txt");
 				string[] lines = output.Split('\n');
 
 				bool isNewDisk = false;
